@@ -1,12 +1,17 @@
 TODO List:
 
 Additions:
-Graphics improvements - Change the Obstacles to images.
+Graphics improvements - Change the Obstacles to images - Partialy
 
 Responsibility: Reuven
-Make the robot pickup/drop the gears.
-Define how does the game end? Win or GameOver.
-Add Status Line: Opening Screen / Win / GameOver
+Make the robot pickup/drop the gears - Done
+Define how does the game end? Win or GameOver - Done
+Add Status Line: Opening Screen / Win / GameOver - Done
+
+KeyBoard Settings - Done:
+d - drills gears
+w - picks gears
+s - drops gear
 
 Responsibility: Aviram
 Create a ScoreBoard Class
@@ -15,7 +20,7 @@ Manage the ScoreBoard - both in code and in ExcelDB
 
 Responsibility: Ofer
 
-Make the Start Button Start the game (currently starts automaticaly) - Change the relevant classes (GameControl , Manage Timer)
-Make the Pause Button Start the game (currently starts automaticaly)
+Make the Start Button Start the game (currently starts automaticaly) - Done (Reuven)
+Make the Pause Button Start the game (currently starts automaticaly) - Change the relevant classes (GameControl or anything else)
 Make the Restart Button Start the game (currently starts automaticaly)
 Add and Manage Music and sound: Both Background and per action.
