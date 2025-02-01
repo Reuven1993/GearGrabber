@@ -7,7 +7,7 @@ import ui_elements.ScreenPoint;
 
 public class Board {
 
-    int[] boardXLimits = { 0, 500 };
+    int[] boardXLimits = { 50, 500 };
     int[] boardYLimits = { 50, 500 };
     private Obstacle[] obstacles;
     private Gear[] gears;
@@ -20,46 +20,68 @@ public class Board {
         int numObstacles = 2;
         int numGears = 2;
 
-        this.obstacles = new Obstacle[numObstacles];
-        this.gears = new Gear[numGears];
         this.home = new Home();
         this.robot = new Robot();
         this.timer = new Timer();
 
-        for (int i = 0; i < numObstacles; i++) {
-            this.obstacles[i] = new Obstacle();
-        }
+        createNewObstacles(numObstacles);
+        createNewGears(numGears);
 
-        for (int i = 0; i < numGears; i++) {
-            this.gears[i] = new Gear();
-        }
+        this.initBoard();
 
     }
 
     public Board(int numObstacles, int numGears) {
 
-        this.obstacles = new Obstacle[numObstacles];
-        this.gears = new Gear[numGears];
         this.home = new Home();
         this.robot = new Robot();
         this.timer = new Timer();
 
-        for (int i = 0; i < numObstacles; i++) {
-            this.obstacles[i] = new Obstacle();
+        createNewObstacles(numObstacles);
+        createNewGears(numGears);
+
+        initBoard();
+    }
+
+    public void updateComponents(int numObstacles, int numGears) {
+
+        createNewObstacles(numObstacles);
+        createNewGears(numGears);
+
+        this.initBoard();
+
+        if (Game.UI() != null) {
+            this.updateBoardOnCanvas();
         }
 
+    }
+
+    public void createNewObstacles(int numObstacles) {
+
+        this.obstacles = new Obstacle[numObstacles];
+
+        for (int i = 0; i < numObstacles; i++) {
+            this.obstacles[i] = new Obstacle("obstacle" + i);
+        }
+
+    }
+
+    public void createNewGears(int numGears) {
+
+        this.gears = new Gear[numGears];
+
         for (int i = 0; i < numGears; i++) {
-            this.gears[i] = new Gear();
+            this.gears[i] = new Gear("gear" + i);
         }
 
     }
 
     public void initBoard() {
 
-        ScreenPoint robotLocation = new ScreenPoint(100, 100);
+        ScreenPoint robotLocation = new ScreenPoint(boardXLimits[0], boardYLimits[0]);
         this.robot.setLocation(robotLocation);
 
-        ScreenPoint homeLocation = new ScreenPoint(100, 100);
+        ScreenPoint homeLocation = new ScreenPoint(boardXLimits[0], boardYLimits[0]);
         this.home.setLocation(homeLocation);
 
         ScreenPoint timerLocation = new ScreenPoint(50, 50);
@@ -118,7 +140,7 @@ public class Board {
 
     }
 
-    public void updateBoard() {
+    public void updateBoardOnCanvas() {
 
         GameCanvas canvas = Game.UI().canvas();
         canvas.deleteAllShapes();
@@ -138,7 +160,7 @@ public class Board {
 
     }
 
-public Gear[] gearsNearRobot() {
+    public Gear[] gearsNearRobot() {
 
         Gear[] gearsNearRobot = new Gear[this.gears.length];
         int count = 0;

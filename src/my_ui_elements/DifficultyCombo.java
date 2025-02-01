@@ -1,12 +1,11 @@
 package my_ui_elements;
+
 import base.Game;
 import my_base.MyContent;
 import my_game.GameControl;
 import ui_elements.GameComboBox;
 
-
 public class DifficultyCombo extends GameComboBox {
-
 
     public DifficultyCombo(int posX, int posY) {
         super("difficultyCombo", "Difficulty", posX, posY, 160, 30, new String[] { "Easy", "Medium", "Hard" });
@@ -22,13 +21,13 @@ public class DifficultyCombo extends GameComboBox {
         super.action();
         switch (getOption()) {
             case "Easy":
-            ((MyContent) Game.Content()).gameControl().setDifficulty(GameControl.Difficulty.EASY);
+                ((MyContent) Game.Content()).gameControl().setDifficulty(GameControl.Difficulty.EASY);
                 break;
             case "Medium":
                 ((MyContent) Game.Content()).gameControl().setDifficulty(GameControl.Difficulty.MEDIUM);
                 break;
             case "Hard":
-            ((MyContent) Game.Content()).gameControl().setDifficulty(GameControl.Difficulty.HARD);
+                ((MyContent) Game.Content()).gameControl().setDifficulty(GameControl.Difficulty.HARD);
                 break;
         }
 

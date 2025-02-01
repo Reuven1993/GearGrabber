@@ -3,15 +3,15 @@ package my_game;
 public class GameControl {
 
     public enum Difficulty {
-        EASY(1, 1, 0), 
-        MEDIUM(2, 3, 50), 
-        HARD(4, 5, 75) ;
-        
+        EASY(1, 1, 0),
+        MEDIUM(2, 3, 50),
+        HARD(4, 5, 75);
+
         private final int numGears;
         private final int numObstacles;
         private final int percentageCoveredGears;
 
-        private Difficulty(int numGears, int numObstacles,int percentageCoveredGears) {
+        private Difficulty(int numGears, int numObstacles, int percentageCoveredGears) {
             this.numGears = numGears;
             this.numObstacles = numObstacles;
             this.percentageCoveredGears = percentageCoveredGears;
@@ -28,7 +28,6 @@ public class GameControl {
         public int getPercentageCoveredGears() {
             return percentageCoveredGears;
         }
-        
 
     }
 
@@ -41,17 +40,19 @@ public class GameControl {
 
     public GameControl() {
         difficulty = Difficulty.MEDIUM;
-        this.board = new Board();
+        this.board = new Board(difficulty.getNumObstacles(), difficulty.getNumGears());
+
     }
 
     public GameControl(Board board) {
         difficulty = Difficulty.MEDIUM;
         this.board = board;
+        this.board.updateComponents(difficulty.getNumObstacles(), difficulty.getNumGears());
     }
-   
-    public void setDifficulty(Difficulty difficulty) {
 
+    public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
+        this.board.updateComponents(difficulty.getNumObstacles(), difficulty.getNumGears());
     }
 
     public Difficulty getDifficulty() {
@@ -68,14 +69,14 @@ public class GameControl {
 
     public void moveRobot(Robot.Direction direction) {
 
-        if (isGameStarted && !isGamePaused && !isGameOver){
+        if (isGameStarted && !isGamePaused && !isGameOver) {
             board.getRobot().move(direction);
         }
 
     }
 
     public void orderRobotDrill() {
-        if (isGameStarted && !isGamePaused && !isGameOver){
+        if (isGameStarted && !isGamePaused && !isGameOver) {
             board.getRobot().drill();
         }
     }

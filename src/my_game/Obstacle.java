@@ -9,12 +9,15 @@ import ui_elements.ScreenPoint;
 public class Obstacle implements Intersectable {
 
     private ScreenPoint location;
-
     private Polyline visPolygon;
+    private final String polyID;
+    private int polyMinRadius = 50;
+    private int polyDeltaRadius = 200;
     // private ScreenPoint[] points;
 
     public Obstacle() {
 
+        this.polyID = "Obstacle";
         this.setLocation(new ScreenPoint(200, 150));
         initObstacle();
 
@@ -22,6 +25,23 @@ public class Obstacle implements Intersectable {
 
     public Obstacle(ScreenPoint location) {
 
+        this.polyID = "Obstacle";
+        this.setLocation(location);
+        initObstacle();
+
+    }
+
+    public Obstacle(String polyID) {
+
+        this.polyID = polyID;
+        this.setLocation(new ScreenPoint(200, 150));
+        initObstacle();
+
+    }
+
+    public Obstacle(String polyID, ScreenPoint location) {
+
+        this.polyID = polyID;
         this.setLocation(location);
         initObstacle();
 
@@ -29,8 +49,7 @@ public class Obstacle implements Intersectable {
 
     public void initObstacle() {
 
-        int polyMinRadius = 50;
-        int polyDeltaRadius = 100;
+
 
         int polyPointX, polyPointY;
 
@@ -42,7 +61,7 @@ public class Obstacle implements Intersectable {
             points[i] = new ScreenPoint(this.location.x + polyPointX, this.location.y + polyPointY);
         }
 
-        visPolygon = new Polyline("Obstacle", points);
+        visPolygon = new Polyline(polyID, points);
         visPolygon.setIsFilled(true);
         visPolygon.setFillColor(Color.BLACK);
         visPolygon.setWeight(3);
@@ -70,8 +89,41 @@ public class Obstacle implements Intersectable {
 
     public void setLocation(ScreenPoint location) {
         this.location = location;
+
+        if (this.visPolygon != null){
+            this.visPolygon.moveToLocation(location.x, location.y);
+        }
     }
 
+    
+
+    public Polyline getVisPolygon() {
+        return visPolygon;
+    }
+
+    public void setVisPolygon(Polyline visPolygon) {
+        this.visPolygon = visPolygon;
+    }
+
+    public String getPolyID() {
+        return polyID;
+    }
+
+    public int getPolyMinRadius() {
+        return polyMinRadius;
+    }
+
+    public void setPolyMinRadius(int polyMinRadius) {
+        this.polyMinRadius = polyMinRadius;
+    }
+
+    public int getPolyDeltaRadius() {
+        return polyDeltaRadius;
+    }
+
+    public void setPolyDeltaRadius(int polyDeltaRadius) {
+        this.polyDeltaRadius = polyDeltaRadius;
+    }
 
     @Override
     public ScreenPoint[] getIntersectionVertices() {

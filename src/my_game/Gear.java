@@ -13,15 +13,38 @@ public class Gear implements Intersectable {
     private final String image_uncoverd = "resources/black_gear_small.png";
     private final String image_covered = "resources/black_gear_small_covered.png";
     // private final String image = "resources/black_gear_small.png";
-    private final String imageID = "Gear";
+    private final String imageID;
     private final int imageWidth = 50;
     private final int imageHeight = 50;
 
     public Gear() {
 
+        this.imageID = "Gear";
         this.setLocation(new ScreenPoint(800, 500));
 
     }
+
+    public Gear(String imageID) {
+
+        this.imageID = imageID;
+        this.setLocation(new ScreenPoint(800, 500));
+
+    }
+
+    public Gear(ScreenPoint location) {
+
+        this.imageID = "Gear";
+        this.setLocation(location);
+
+    }
+
+    public Gear(String imageID, ScreenPoint location) {
+
+        this.imageID = imageID;
+        this.setLocation(location);
+
+    }
+
 
     public void unCover() {
         isUncoverd = true;
@@ -60,8 +83,12 @@ public class Gear implements Intersectable {
 
     public void setLocation(ScreenPoint location) {
         this.location = location;
-    }
 
+        if (Game.UI() != null){
+            Game.UI().canvas().moveShapeToLocation(this.imageID, location.x, location.y);
+        }
+        
+    }
 
 
     public String getImage() {
