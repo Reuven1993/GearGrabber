@@ -40,6 +40,7 @@ public class StatusLine {
     public void displayPlayerWonText() {
 
 
+        this.color = Color.GREEN;
         updateText(this.getPlayerWonText());
 
 
