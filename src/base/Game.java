@@ -50,6 +50,9 @@ public abstract class Game {
 	public void initUI() {
 		gameUI = new GameUI("My Game", 1000, 1000);
 		initCanvas();
+		// For Debug Delete this next line!!!!!
+		gameUI.setVisible(true);
+		
 		initDashboard();
 		gameUI.setFocusable(true);
 		gameUI.setVisible(true);

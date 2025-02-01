@@ -10,12 +10,14 @@ public class Gear implements Intersectable {
 
     private ScreenPoint location;
     private boolean isUncoverd = false;
+
     private final String image_uncoverd = "resources/black_gear_small.png";
     private final String image_covered = "resources/black_gear_small_covered.png";
-    // private final String image = "resources/black_gear_small.png";
+
     private final String imageID;
     private final int imageWidth = 50;
     private final int imageHeight = 50;
+
 
     public Gear() {
 
@@ -51,8 +53,6 @@ public class Gear implements Intersectable {
         Game.UI().canvas().changeImage(imageID, getImage(), getImageWidth(), getImageHeight());
     }
 
-
-
     public void addToCanvas() {
 
         GameCanvas canvas = Game.UI().canvas();
@@ -75,8 +75,6 @@ public class Gear implements Intersectable {
         canvas.addShape(image);
     }
 
-
-
     public ScreenPoint getLocation() {
         return location;
     }
@@ -90,6 +88,14 @@ public class Gear implements Intersectable {
         
     }
 
+    public void moveLocation(int dx, int dy) {
+        this.location.x += dx;
+        this.location.y += dy;
+
+        if (Game.UI() != null) {
+            Game.UI().canvas().moveShapeToLocation(this.imageID, location.x, location.y);
+        }
+    }
 
     public String getImage() {
         if (isUncoverd) {
@@ -111,9 +117,11 @@ public class Gear implements Intersectable {
     public int getImageHeight() {
         return imageHeight;
     }
-
-
     
+    public boolean isUncoverd() {
+        return isUncoverd;
+    }
+
     @Override
     public ScreenPoint[] getIntersectionVertices() {
         int intersectionWidth = getImageWidth();
@@ -122,16 +130,6 @@ public class Gear implements Intersectable {
         int leftX = this.location.x;
         int topY = this.location.y;
 
-        // ScreenPoint[] vertices = {
-        // new ScreenPoint(centerX - intersectionWidth / 2, centerY - intersectionHeight
-        // / 2),
-        // new ScreenPoint(centerX + intersectionWidth / 2, centerY - intersectionHeight
-        // / 2),
-        // new ScreenPoint(centerX + intersectionWidth / 2, centerY + intersectionHeight
-        // / 2),
-        // new ScreenPoint(centerX - intersectionWidth / 2, centerY + intersectionHeight
-        // / 2)
-        // };
         ScreenPoint[] vertices = {
                 new ScreenPoint(leftX, topY),
                 new ScreenPoint(leftX + intersectionWidth, topY),
@@ -140,4 +138,6 @@ public class Gear implements Intersectable {
         };
         return vertices;
     }
+
+
 }

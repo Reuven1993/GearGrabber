@@ -5,8 +5,20 @@ import ui_elements.GameButton;
 
 public class RestartGameButton extends GameButton {
 
+    private DifficultyCombo difficultyCombo;
+    private AesteticObstacleCB aestheticObstacleCB;
+
     public RestartGameButton(String id, String name, int posX, int posY) {
         super(id, name, 100, 40, posX, posY);
+        difficultyCombo = (DifficultyCombo) Game.UI().dashboard().getUIElement("difficultyCombo");
+        aestheticObstacleCB = (AesteticObstacleCB) Game.UI().dashboard().getUIElement("aestheticObstacleCB");
+    }
+
+    public RestartGameButton(String id, String name, int posX, int posY, DifficultyCombo difficultyCombo, AesteticObstacleCB aestheticObstacleCB) {
+        super(id, name, 100, 40, posX, posY);
+        this.difficultyCombo = difficultyCombo;
+        this.aestheticObstacleCB = aestheticObstacleCB;
+
     }
 
     @Override
@@ -19,6 +31,13 @@ public class RestartGameButton extends GameButton {
         
         //TODO
         //Restart the game
+
+        //Enable the difficulty combo box
+        difficultyCombo.enable();
+
+        //Enable the Aesthetic Obstacle checkbox
+        aestheticObstacleCB.enable();
+
     }
 
 }

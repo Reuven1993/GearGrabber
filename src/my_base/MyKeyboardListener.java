@@ -42,6 +42,13 @@ public class MyKeyboardListener extends KeyboardListener {
 			case 'd':
 				myContent.gameControl().orderRobotDrill();
 				break;
+			case 'w':
+				myContent.gameControl().orderRobotPickup();
+				break;
+			case 's':
+				myContent.gameControl().orderRobotDrop();
+				break;
+
 		}
 
 		System.out.println("key character = '" + c + "'" + " pressed.");

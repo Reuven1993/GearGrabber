@@ -9,20 +9,24 @@ public class Board {
 
     int[] boardXLimits = { 50, 500 };
     int[] boardYLimits = { 50, 500 };
+    private boolean useAestheticObstacles = true;
     private Obstacle[] obstacles;
     private Gear[] gears;
     private Home home;
     private Robot robot;
     private Timer timer;
+    private StatusLine statusLine;
 
     public Board() {
 
         int numObstacles = 2;
         int numGears = 2;
+        long gameDuration = 30000;
 
         this.home = new Home();
         this.robot = new Robot();
-        this.timer = new Timer();
+        this.timer = new Timer(gameDuration);
+        this.statusLine = new StatusLine();
 
         createNewObstacles(numObstacles);
         createNewGears(numGears);
@@ -33,9 +37,23 @@ public class Board {
 
     public Board(int numObstacles, int numGears) {
 
+        long gameDuration = 30000;
+        
         this.home = new Home();
         this.robot = new Robot();
-        this.timer = new Timer();
+        this.timer = new Timer(gameDuration);
+
+        createNewObstacles(numObstacles);
+        createNewGears(numGears);
+
+        initBoard();
+    }
+
+    public Board(int numObstacles, int numGears, long gameDuration) {
+
+        this.home = new Home();
+        this.robot = new Robot();
+        this.timer = new Timer(gameDuration);
 
         createNewObstacles(numObstacles);
         createNewGears(numGears);
@@ -61,7 +79,7 @@ public class Board {
         this.obstacles = new Obstacle[numObstacles];
 
         for (int i = 0; i < numObstacles; i++) {
-            this.obstacles[i] = new Obstacle("obstacle" + i);
+            this.obstacles[i] = new Obstacle("obstacle" + i , useAestheticObstacles);
         }
 
     }
@@ -88,12 +106,9 @@ public class Board {
         this.timer.setLocation(timerLocation);
 
         ScreenPoint[] obstaclesLocations = new ScreenPoint[this.obstacles.length];
-        int[] obstaclesRadii = new int[this.obstacles.length];
         for (int i = 0; i < this.obstacles.length; i++) {
 
-            obstaclesRadii[i] = 50;
             obstaclesLocations[i] = randomLocation(boardXLimits[0], boardYLimits[0], boardXLimits[1], boardYLimits[1]);
-
             this.obstacles[i].setLocation(obstaclesLocations[i]);
 
         }
@@ -124,10 +139,12 @@ public class Board {
         int timerZOrder = 3;
         int obstacleZOrder = 4;
         int gearZOrder = 5;
+        int statusLineZOrder = 10;
 
         this.home.addToCanvas(homeZOrder);
         this.robot.addToCanvas(robotZOrder);
         this.timer.addToCanvas(timerZOrder);
+        this.statusLine.addToCanvas(statusLineZOrder);
 
         // Decide if to use this sintax or a more classic one
         for (Obstacle obstacle : this.obstacles) {
@@ -196,4 +213,45 @@ public class Board {
         return timer;
     }
 
+    public boolean checkAllGearsAtHome() {
+        
+        for (Gear gear : this.gears) {
+            if (!IntersectionAlgorithm.areIntersecting(this.home, gear)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public StatusLine getStatusLine() {
+        return statusLine;
+    }
+
+    public int[] getBoardXLimits() {
+        return boardXLimits;
+    }
+
+    public void setBoardXLimits(int[] boardXLimits) {
+        this.boardXLimits = boardXLimits;
+    }
+
+    public int[] getBoardYLimits() {
+        return boardYLimits;
+    }
+
+    public void setBoardYLimits(int[] boardYLimits) {
+        this.boardYLimits = boardYLimits;
+    }
+
+    public boolean isUseAestheticObstacles() {
+        return useAestheticObstacles;
+    }
+
+    public void setUseAestheticObstacles(boolean useAestheticObstacles) {
+        this.useAestheticObstacles = useAestheticObstacles;
+
+    }
+    
+    
 }

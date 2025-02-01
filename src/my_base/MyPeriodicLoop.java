@@ -17,11 +17,9 @@ public class MyPeriodicLoop extends PeriodicLoop {
 		// Let the super class do its work first
 		super.execute();
 
-		GameCanvas canvas = Game.UI().canvas();
-
-		content.board().getTimer().refresh();
-
-		canvas.repaint();
+		// GameCanvas canvas = Game.UI().canvas();
+		
+		content.gameControl().gameStep();
 
 	}
 

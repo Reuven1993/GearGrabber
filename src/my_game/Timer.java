@@ -10,22 +10,32 @@ import ui_elements.ScreenPoint;
 
 public class Timer {
 
-    private long gameTime; // in mili-seconds
-    private long timeRemaining = gameTime;
+    private long startGameTime;
+    private long gameDuration; // in mili-seconds`
+    private long endGameTime;
+    private long timeRemaining;
     
     private final String guid = "timer";
 
-    private ScreenPoint location;
+    private ScreenPoint location = new ScreenPoint(50, 50);
 
     public Timer() {
 
-        gameTime = 30000;
-        this.setLocation(new ScreenPoint(50, 50));
+        // gameTime = 30000;
+        gameDuration = 1000;
+        timeRemaining = gameDuration;
+        startGameTime = PeriodicLoop.elapsedTime();
+        endGameTime = startGameTime + gameDuration;
 
     }
 
-    public Timer(int gameTime) {
-        this.gameTime = gameTime;
+    public Timer(long gameTime) {
+
+        this.gameDuration = gameTime;
+        timeRemaining = gameTime;
+        startGameTime = PeriodicLoop.elapsedTime();
+        endGameTime = startGameTime + gameTime;
+
     }
 
     public void addToCanvas() {
@@ -44,11 +54,16 @@ public class Timer {
 
         GameCanvas canvas = Game.UI().canvas();
 
-        Text timeText = new Text(this.guid, this.toString(), this.getLocation().x, this.getLocation().y);
+        Text timeText = new Text(this.guid, this.toString(), this.location.x, this.location.y);
 		timeText.setColor(Color.BLACK);
         timeText.setzOrder(zOrder);
 		canvas.addShape(timeText);
 
+    }
+
+    public void start() {
+        startGameTime = PeriodicLoop.elapsedTime();
+        endGameTime = startGameTime + gameDuration;
     }
 
     public void refresh() {
@@ -56,8 +71,8 @@ public class Timer {
         GameCanvas canvas = Game.UI().canvas();
         Text t1 = (Text) canvas.getShape(this.getGuid());
 
-        if (PeriodicLoop.elapsedTime() < gameTime) {
-            timeRemaining = gameTime - PeriodicLoop.elapsedTime();
+        if (PeriodicLoop.elapsedTime() < endGameTime) {
+            timeRemaining = endGameTime - PeriodicLoop.elapsedTime();
             
         } else {
             
@@ -69,6 +84,13 @@ public class Timer {
 		
     }
 
+    public void updateText() {
+        GameCanvas canvas = Game.UI().canvas();
+        Text t1 = (Text) canvas.getShape(this.getGuid());
+        t1.setText(this.toString());
+        canvas.repaint();
+    }
+
     public ScreenPoint getLocation() {
         return location;
     }
@@ -77,12 +99,13 @@ public class Timer {
         this.location = location;
     }
 
-    public long getGameTime() {
-        return gameTime;
+    public long getGameDuration() {
+        return gameDuration;
     }
 
-    public void setGameTime(long gameTime) {
-        this.gameTime = gameTime;
+    public void setGameDuration(long gameDuration) {
+        this.gameDuration = gameDuration;
+        this.setTimeRemaining(gameDuration);
     }
 
     public long getTimeRemaining() {
@@ -91,6 +114,7 @@ public class Timer {
 
     public void setTimeRemaining(long timeRemaining) {
         this.timeRemaining = timeRemaining;
+        this.updateText();
     }
 
 

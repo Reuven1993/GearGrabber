@@ -10,6 +10,7 @@ public class DifficultyCombo extends GameComboBox {
     public DifficultyCombo(int posX, int posY) {
         super("difficultyCombo", "Difficulty", posX, posY, 160, 30, new String[] { "Easy", "Medium", "Hard" });
         this.comboBox.setSelectedItem("Medium");
+        this.action();
     }
 
     public void setDifficulty(String difficulty) {
@@ -31,6 +32,14 @@ public class DifficultyCombo extends GameComboBox {
                 break;
         }
 
+    }
+
+    public void enable() {
+        this.comboBox.setEnabled(true);
+    }
+
+    public void disable() {
+        this.comboBox.setEnabled(false);
     }
 
 }

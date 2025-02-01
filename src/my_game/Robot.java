@@ -40,6 +40,7 @@ public class Robot implements Intersectable {
     private final int imageWidth = 45;
     private final int imageHeight = 45;
     private final String imageID = "myRobot";
+    private Gear heldGear;
 
     public Robot() {
 
@@ -75,41 +76,36 @@ public class Robot implements Intersectable {
 
     public void setLocation(ScreenPoint location) {
         this.location = location;
+        if (Game.UI() != null){
+            Game.UI().canvas().moveShapeToLocation(imageID, location.x, location.y);
+        }
     }
 
     public void moveLocation(int dx, int dy) {
         this.location.x += dx;
         this.location.y += dy;
+
+        if (Game.UI() != null) {
+            Game.UI().canvas().moveShapeToLocation(imageID, location.x, location.y);
+        }
     }
 
     public void move(Direction direction) {
 
-        ScreenPoint currLocation = new ScreenPoint(location.x, location.y);
-        
-        ScreenPoint desired = new ScreenPoint(location.x + direction.xVec() * this.velocity,
-                location.y + direction.yVec() * this.velocity);
+        int dx = direction.xVec() * this.velocity;
+        int dy = direction.yVec() * this.velocity;
 
-        location.x = desired.x;
-        location.y = desired.y;
-
-        if (((MyContent) Game.Content()).board().isLegalRobotLocation()) {
-            // After changing the robot self location, move also its image in the canvas
-            // accordingly.
-            Game.UI().canvas().moveShapeToLocation(imageID, location.x, location.y);
-        } else {
-            location = currLocation;
+        this.moveLocation(dx, dy);
+        if (heldGear != null) {
+            heldGear.moveLocation(dx, dy);
         }
 
-        // // After changing the robot self location, move also its image in the canvas
-        // // accordingly.
-        // Game.UI().canvas().moveShapeToLocation(imageID, location.x, location.y);
-
-        // Obstacle myObstacle = ((MyContent) Game.Content()).myObstacle();
-        // if (IntersectionAlgorithm.areIntersecting(this, myObstacle)) {
-
-        //     location = currLocation;
-
-        // }
+        if (!(((MyContent) Game.Content()).board().isLegalRobotLocation())) {
+            this.moveLocation(-dx, -dy);
+            if (heldGear != null) {
+                heldGear.moveLocation(-dx, -dy);
+            }
+        }
 
     }
 
@@ -123,7 +119,28 @@ public class Robot implements Intersectable {
 
     }
 
+    public void pickupGears() {
 
+        if (heldGear != null) {
+            return;
+        }
+        
+        Gear[] gearsNearRobot = ((MyContent) Game.Content()).board().gearsNearRobot();
+
+        for (Gear gear : gearsNearRobot) {
+            if (gear.isUncoverd()) {
+                heldGear = gear;
+                break;
+            }
+        }
+
+    }
+
+    public void dropGear() {
+
+        heldGear = null;
+
+    }
 
     public int getRotation() {
         return rotation;
@@ -159,16 +176,6 @@ public class Robot implements Intersectable {
         int leftX = this.location.x;
         int topY = this.location.y;
 
-        // ScreenPoint[] vertices = {
-        // new ScreenPoint(centerX - intersectionWidth / 2, centerY - intersectionHeight
-        // / 2),
-        // new ScreenPoint(centerX + intersectionWidth / 2, centerY - intersectionHeight
-        // / 2),
-        // new ScreenPoint(centerX + intersectionWidth / 2, centerY + intersectionHeight
-        // / 2),
-        // new ScreenPoint(centerX - intersectionWidth / 2, centerY + intersectionHeight
-        // / 2)
-        // };
         ScreenPoint[] vertices = {
                 new ScreenPoint(leftX, topY),
                 new ScreenPoint(leftX + intersectionWidth, topY),
