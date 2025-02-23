@@ -13,8 +13,10 @@ import my_ui_elements.MusicButton;
 import my_ui_elements.StartGameButton;
 import my_ui_elements.PauseGameButton;
 import my_ui_elements.RestartGameButton;
+// import my_ui_elements.EndButton;
 import my_ui_elements.DifficultyCombo;
 import my_ui_elements.AesteticObstacleCB;
+import my_ui_elements.CustomEndButton;
 ;
 public class MyGame extends Game {
 
@@ -50,6 +52,8 @@ public class MyGame extends Game {
 		dashboard.addUIElement(new StartGameButton("startButton", "Start", 0, 0,difficultyCombo,aestheticObstacleCB));
 		dashboard.addUIElement(new PauseGameButton("pauseButton", "Pause", 0, 50));
 		dashboard.addUIElement(new RestartGameButton("restartButton", "Restart", 0, 100,difficultyCombo,aestheticObstacleCB));
+		dashboard.addUIElement(new CustomEndButton("customEndButton", "EXIT", 100, 40, 850, 40));
+
 
 		dashboard.addUIElement(new MusicButton("musicButton", "Play", 700, 40));
 

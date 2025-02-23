@@ -18,7 +18,6 @@ public class RestartGameButton extends GameButton {
         super(id, name, 100, 40, posX, posY);
         this.difficultyCombo = difficultyCombo;
         this.aestheticObstacleCB = aestheticObstacleCB;
-
     }
 
     @Override
@@ -29,15 +28,19 @@ public class RestartGameButton extends GameButton {
 
         MyContent content = (MyContent) Game.Content();
         
-        //TODO
-        //Restart the game
+        // Restart the game
+        content.gameControl().restartGame();
 
-        //Enable the difficulty combo box
+        // Enable the difficulty combo box
         difficultyCombo.enable();
 
-        //Enable the Aesthetic Obstacle checkbox
+        // Enable the Aesthetic Obstacle checkbox
         aestheticObstacleCB.enable();
-
+        
+        // Reset pause button text if it was changed
+        GameButton pauseButton = (GameButton) Game.UI().dashboard().getUIElement("pauseButton");
+        if (pauseButton != null && !pauseButton.getText().equals("Pause")) {
+            pauseButton.setText("Pause");
+        }
     }
-
 }

@@ -18,8 +18,14 @@ public class PauseGameButton extends GameButton {
 
         MyContent content = (MyContent) Game.Content();
 
-        // TODO
-        // Pause the game
+        // Pause or resume the game - GameControl.pauseGame() handles all the checks internally
+        content.gameControl().pauseGame();
+        
+        // Update button text based on game state
+        if (content.gameControl().isGamePaused()) {
+            this.setText("Resume");
+        } else {
+            this.setText("Pause");
+        }
     }
-
 }
