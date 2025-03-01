@@ -131,25 +131,29 @@ public class Robot implements Intersectable {
             Game.soundManager().playSound("error");
             return;
         }
-        
+       
         Gear[] gearsNearRobot = ((MyContent) Game.Content()).board().gearsNearRobot();
-        
+       
         if (gearsNearRobot.length == 0) {
             Game.soundManager().playSound("error");
             return;
         }
-        
+       
         boolean foundUncoveredGear = false;
-        
+       
         for (Gear gear : gearsNearRobot) {
             if (gear.isUncoverd()) {
                 heldGear = gear;
                 Game.soundManager().playSound("pickup");
                 foundUncoveredGear = true;
+                
+                // Notify game control that a gear was collected
+                ((MyContent) Game.Content()).gameControl().notifyGearCollected();
+                
                 break;
             }
         }
-        
+       
         if (!foundUncoveredGear) {
             Game.soundManager().playSound("error");
         }

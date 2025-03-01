@@ -238,9 +238,11 @@ public class ExcelTable {
     }
 
     public void WriteToFile() {
+        System.out.println("WriteToFile called for: " + filename);
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet(EMPTY_FILE);
-
+    
+        System.out.println("Creating header row");
         Row firstRow = sheet.createRow(0);
         int firstRowColumn = 0;
         for (String heading : headings) {
@@ -248,21 +250,26 @@ public class ExcelTable {
             keyCell.setCellValue(heading);
             firstRowColumn++;
         }
+        
+        System.out.println("Writing " + excelMap.size() + " data rows");
         int rowCount = 1;
-
+    
         for (String key : excelMap.keySet()) {
             Row row = sheet.createRow(rowCount++);
-
+    
             int columnCount = 0;
             for (String value : excelMap.get(key)) {
                 Cell valueCell = row.createCell(columnCount++);
                 valueCell.setCellValue(value);
             }
-
         }
+        
+        System.out.println("Attempting to write to file: " + filename);
         try (FileOutputStream outputStream = new FileOutputStream(filename)) {
             workbook.write(outputStream);
+            System.out.println("Successfully wrote to file");
         } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
             e.printStackTrace();
         }
     }

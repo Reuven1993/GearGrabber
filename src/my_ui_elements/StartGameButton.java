@@ -24,22 +24,28 @@ public class StartGameButton extends GameButton {
 
     @Override
     public void action() {
-        // The basic buttonAction prints the id of the button to the console.
-        // Keep the call to super to preserve this behavior or remove it if you don't
-        // want the printing.
         super.action();
-
+    
         MyContent content = (MyContent) Game.Content();
-
-        // TODO
-        // Start the game
+        
+        // Use the accessor method instead of directly accessing the field
+        if (!content.gameControl().isGameStarted()) {
+            String playerName = javax.swing.JOptionPane.showInputDialog(
+                Game.UI().frame(),
+                "Enter your name:",
+                "Player Name",
+                javax.swing.JOptionPane.QUESTION_MESSAGE);
+                
+            if (playerName == null || playerName.trim().isEmpty()) {
+                playerName = "Player1";
+            }
+            
+            content.gameControl().setPlayerName(playerName);
+        }
+        
         content.gameControl().startGame();
-
-        // Disable the difficulty combo box
         difficultyCombo.disable();
-
-        //Disable the Aesthetic Obstacle checkbox
         aestheticObstacleCB.disable();
-
     }
+    
 }

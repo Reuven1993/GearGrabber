@@ -71,6 +71,8 @@ public void resetGame() {
         difficulty = Difficulty.MEDIUM;
         this.board = board;
         this.board.updateComponents(difficulty.getNumObstacles(), difficulty.getNumGears());
+        this.scoreBoard = new ScoreBoard();
+        this.player = new Player("Player1");
     }
 
     public void startGame() {
@@ -168,8 +170,13 @@ public void resetGame() {
         isGameWon = true;
         this.board.getStatusLine().displayPlayerWonText();
         
+        // Update score board
+        calculateFinalScore();
+
         // Play win sound
         Game.audioPlayer().play("resources/audio/Applause.wav.wav", 1);
+
+
     }
 
     public void playerLost() {
@@ -217,6 +224,7 @@ public void resetGame() {
 
     public void orderRobotPickup() {
         if (isGameStarted && !isGamePaused && !isGameOver) {
+            // Just call the method without trying to get a return value
             board.getRobot().pickupGears();
         }
     }
@@ -257,4 +265,54 @@ public void resetGame() {
     public boolean isGameRunning() {
         return isGameStarted && !isGamePaused && !isGameOver;
     }
+
+/**
+ * Called when the robot successfully picks up a gear.
+ * Updates the player's gear collection count.
+ */
+public void notifyGearCollected() {
+    if (player != null) {
+        player.incrementGearsCollected();
+    }
+}
+    public Player player;
+    public ScoreBoard scoreBoard;
+
+    public void setPlayerName(String name) {
+        this.player = new Player(name);
+    }
+    
+    public void calculateFinalScore() {
+        if (!isGameOver) return;
+        
+        long timeRemaining = board.getTimer().getTimeRemaining() / 1000;
+        int gearsCollected = player.getGearsCollected();
+        
+        int finalScore = (int)(timeRemaining * 10) + (gearsCollected * 100);
+        
+        switch (difficulty) {
+            case EASY:
+                finalScore = (int)(finalScore * 0.8);
+                break;
+            case MEDIUM:
+                break;
+            case HARD:
+                finalScore = (int)(finalScore * 1.5);
+                break;
+        }
+        
+        player.setCurrentScore(finalScore);
+        
+        System.out.println("Saving score for player: " + player.getName() + ", score: " + finalScore);
+        
+        scoreBoard.addScore(
+            player.getName(),
+            player.getCurrentScore(),
+            difficulty.toString(),
+            player.getGearsCollected(),
+            board.getTimer().getTimeRemaining()
+        );
+    }
+
+    
 }

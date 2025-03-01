@@ -32,10 +32,13 @@ public class ExcelDB {
     }
 
     // writes the changes made to the DB tables back to the excel files
-    public void commit(){
+    public void commit() {
+        System.out.println("ExcelDB.commit() called - attempting to commit all tables");
         for (ExcelTable excelTable : tables.values()) {
+            System.out.println("Committing table: " + excelTable);
             excelTable.WriteToFile();
         }
+        System.out.println("ExcelDB.commit() completed");
     }
 
     // creates a new table with the specified headings

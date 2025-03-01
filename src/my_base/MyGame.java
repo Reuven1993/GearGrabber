@@ -17,6 +17,7 @@ import my_ui_elements.RestartGameButton;
 import my_ui_elements.DifficultyCombo;
 import my_ui_elements.AesteticObstacleCB;
 import my_ui_elements.CustomEndButton;
+import my_ui_elements.HighScoreButton;
 ;
 public class MyGame extends Game {
 
@@ -56,6 +57,7 @@ public class MyGame extends Game {
 
 
 		dashboard.addUIElement(new MusicButton("musicButton", "Play", 700, 40));
+		dashboard.addUIElement(new HighScoreButton("highScoreButton", "High Scores", 600, 40));
 
 	}
 
