@@ -1,5 +1,6 @@
 
 package my_game;
+import base.AudioPlayer;
 import base.Game;
 public class GameControl {
 
@@ -38,6 +39,28 @@ public class GameControl {
     boolean isGamePaused = false;
     boolean isGameOver = false;
     boolean isGameWon = false;
+
+
+
+public boolean isPaused() {
+    return isGamePaused;
+}
+
+public boolean isGameOver() {
+    return isGameOver;
+}
+
+public boolean isGameStarted() {
+    return isGameStarted;
+}
+
+public void resetGame() {
+    isGameStarted = false;
+    isGamePaused = false;
+    isGameOver = false;
+    isGameWon = false;
+    board.getStatusLine().displayStartText();
+}
 
     public GameControl() {
         difficulty = Difficulty.MEDIUM;
@@ -146,15 +169,20 @@ public class GameControl {
         this.board.getStatusLine().displayPlayerWonText();
         
         // Play win sound
-        Game.audioPlayer().play("Applause.wav.wav", 1);
+        Game.audioPlayer().play("resources/audio/Applause.wav.wav", 1);
     }
 
     public void playerLost() {
         isGameOver = true;
         this.board.getStatusLine().displayGameOverText();
         
-        // Play game over sound
-        Game.audioPlayer().play("mixkit-arcade-retro-game-over-213.wav", 1);
+        // Stop any currently playing music
+        if (Game.audioPlayer().getStatus() == AudioPlayer.MusicStatus.PLAYING) {
+            Game.audioPlayer().stop();
+        }
+        
+        // Play the losing sound effect
+        Game.audioPlayer().play("resources/audio/loosing_sound.wav.wav", 1);
     }
 
     public void setDifficulty(Difficulty difficulty) {
@@ -184,6 +212,7 @@ public class GameControl {
         if (isGameStarted && !isGamePaused && !isGameOver) {
             board.getRobot().drill();
         }
+
     }
 
     public void orderRobotPickup() {

@@ -1,7 +1,8 @@
 package base;
 
 import DB.ExcelDB;
-import my_ui_elements.EndButton;
+import my_ui_elements.CustomEndButton;
+
 
 public abstract class Game {
 	protected static GameContent gameContent;
@@ -11,11 +12,14 @@ public abstract class Game {
 	private static PeriodicScheduler scheduler;
 	private static AudioPlayer audioPlayer;
 	private static ExcelDB excelDB;
+	private static SoundManager soundManager;
+
 	
 	public Game() {
 		scheduler = new PeriodicScheduler();
 		excelDB = ExcelDB.getInstance();
 		audioPlayer = new AudioPlayer();
+		soundManager = SoundManager.getInstance();
 	}
 
 	/*
@@ -70,7 +74,7 @@ public abstract class Game {
 	
 	protected void initDashboard() {
 		// Add end button to terminate game
-		gameUI.dashboard().addUIElement(new EndButton("btnEND", "END", 100, 60, 850, 50));
+		gameUI.dashboard().addUIElement(new CustomEndButton("btnEND", "END", 100, 60, 850, 50));
 	}
 	
 	//You can refer to the game UI from anywhere by Game.UI()
@@ -97,6 +101,10 @@ public abstract class Game {
 
 	public static AudioPlayer audioPlayer() {
 		return audioPlayer;
+	}
+
+	public static SoundManager soundManager() {
+		return soundManager;
 	}
 
 	

@@ -109,31 +109,50 @@ public class Robot implements Intersectable {
 
     }
 
+
+
     public void drill() {
-
         Gear[] gearsNearRobot = ((MyContent) Game.Content()).board().gearsNearRobot();
-
+        
+        if (gearsNearRobot.length > 0) {
+            Game.soundManager().playSound("drill");
+        } else {
+            Game.soundManager().playSound("error");
+        }
+        
         for (Gear gear : gearsNearRobot) {
             gear.unCover();
         }
-
     }
-
+    
+    
     public void pickupGears() {
-
         if (heldGear != null) {
+            Game.soundManager().playSound("error");
             return;
         }
         
         Gear[] gearsNearRobot = ((MyContent) Game.Content()).board().gearsNearRobot();
-
+        
+        if (gearsNearRobot.length == 0) {
+            Game.soundManager().playSound("error");
+            return;
+        }
+        
+        boolean foundUncoveredGear = false;
+        
         for (Gear gear : gearsNearRobot) {
             if (gear.isUncoverd()) {
                 heldGear = gear;
+                Game.soundManager().playSound("pickup");
+                foundUncoveredGear = true;
                 break;
             }
         }
-
+        
+        if (!foundUncoveredGear) {
+            Game.soundManager().playSound("error");
+        }
     }
 
     public void dropGear() {
