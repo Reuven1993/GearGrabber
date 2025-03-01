@@ -3,6 +3,7 @@ package my_ui_elements;
 import java.awt.Color;
 import base.Game;
 import my_game.ScoreBoard;
+import shapes.Rectangle;
 import shapes.Text;
 import ui_elements.GameButton;
 
@@ -11,6 +12,7 @@ public class HighScoreButton extends GameButton {
     private ScoreBoard scoreBoard;
     private boolean scoresDisplayed = false;
     private static final String HIGH_SCORE_TITLE_ID = "highScoreTitle";
+    private static final String BACKGROUND_RECT_ID = "highScoreBg"; // New ID for the background
     private static final int MAX_SCORE_ROWS = 10;
     private static final String SCORE_ROW_PREFIX = "scoreRow";
     
@@ -42,6 +44,11 @@ public class HighScoreButton extends GameButton {
      * Can be called from other classes to clean up the UI
      */
     public void clearHighScores() {
+        // Clear background rectangle
+        if (Game.UI().canvas().getShape(BACKGROUND_RECT_ID) != null) {
+            Game.UI().canvas().deleteShape(BACKGROUND_RECT_ID);
+        }
+        
         // Clear title
         if (Game.UI().canvas().getShape(HIGH_SCORE_TITLE_ID) != null) {
             Game.UI().canvas().deleteShape(HIGH_SCORE_TITLE_ID);
@@ -59,18 +66,27 @@ public class HighScoreButton extends GameButton {
     }
     
     /**
-     * Displays the high scores on the canvas
+     * Displays the high scores on the canvas with a background frame
      */
     private void displayHighScores() {
         // Clear any existing scores first
         clearHighScores();
         
-        String[][] topScores = scoreBoard.getTopScores(MAX_SCORE_ROWS);
+        // Add background rectangle as a frame
+        Rectangle background = new Rectangle(BACKGROUND_RECT_ID, 280, 300, 300, 350);
+        background.setIsFilled(true); // Fill the rectangle
+        background.setFillColor(new Color(220, 220, 220)); 
+        background.setColor(Color.BLACK);
+        background.setWeight(2); 
+        Game.UI().canvas().addShape(background);
         
+        // Add title
         Text titleText = new Text(HIGH_SCORE_TITLE_ID, "HIGH SCORES", 300, 350);
         titleText.setColor(Color.BLUE);
         titleText.setFontSize(24);
         Game.UI().canvas().addShape(titleText);
+        
+        String[][] topScores = scoreBoard.getTopScores(MAX_SCORE_ROWS);
         
         if (topScores.length == 0) {
             Text noScoresText = new Text(SCORE_ROW_PREFIX + "0", "No scores recorded yet!", 300, 370);
@@ -82,10 +98,9 @@ public class HighScoreButton extends GameButton {
         
         int yPos = 370;
         for (int i = 0; i < topScores.length; i++) {
-            // Assuming columns are: ID, PlayerName, Score, Difficulty, Date, GearsCollected, TimeRemaining
-            String playerName = topScores[i][1]; // Index 1 is PlayerName
-            String score = topScores[i][2];      // Index 2 is Score
-            String difficulty = topScores[i][3]; // Index 3 is Difficulty
+            String playerName = topScores[i][1];
+            String score = topScores[i][2];      
+            String difficulty = topScores[i][3];
             
             String scoreText = (i+1) + ". " + playerName + ": " + score + 
                                " (Difficulty: " + difficulty + ")";
