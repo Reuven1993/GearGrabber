@@ -10,31 +10,36 @@ import ui_elements.ScreenPoint;
 
 public class Timer {
 
-    private long startGameTime;
-    private long gameDuration; // in mili-seconds
-    private long endGameTime;
-    private long timeRemaining;
-    private long pausedAt; // Time when timer was paused
-    private boolean isRunning; // Is timer currently running?
+    private volatile long startGameTime;
+    private volatile long gameDuration; // in mili-seconds
+    private volatile long endGameTime;
+    private volatile long timeRemaining;
+    private volatile long pausedAt; // Time when timer was paused
+    private volatile boolean isRunning; // Is timer currently running?
     
     private final String guid = "timer";
+    private final Object timerLock = new Object(); // For thread synchronization
 
     private ScreenPoint location = new ScreenPoint(50, 50);
 
     public Timer() {
-        gameDuration = 1000;
-        timeRemaining = gameDuration;
-        startGameTime = PeriodicLoop.elapsedTime();
-        endGameTime = startGameTime + gameDuration;
-        isRunning = false;
+        synchronized(timerLock) {
+            gameDuration = 1000;
+            timeRemaining = gameDuration;
+            startGameTime = PeriodicLoop.elapsedTime();
+            endGameTime = startGameTime + gameDuration;
+            isRunning = false;
+        }
     }
 
     public Timer(long gameTime) {
-        this.gameDuration = gameTime;
-        timeRemaining = gameTime;
-        startGameTime = PeriodicLoop.elapsedTime();
-        endGameTime = startGameTime + gameTime;
-        isRunning = false;
+        synchronized(timerLock) {
+            this.gameDuration = gameTime;
+            timeRemaining = gameTime;
+            startGameTime = PeriodicLoop.elapsedTime();
+            endGameTime = startGameTime + gameTime;
+            isRunning = false;
+        }
     }
 
     public void addToCanvas() {
@@ -58,86 +63,102 @@ public class Timer {
 
     // Reset and start timer
     public void start() {
-        startGameTime = PeriodicLoop.elapsedTime();
-        endGameTime = startGameTime + gameDuration;
-        timeRemaining = gameDuration;
-        isRunning = true;
-        pausedAt = 0;
-        
-        // Update the display
-        updateText();
-        
-        System.out.println("Timer started: " + isRunning + ", duration: " + gameDuration + "ms");
-    }
-
-    // New method to pause the timer
-    public void pause() {
-        if (isRunning) {
-            pausedAt = PeriodicLoop.elapsedTime();
-            isRunning = false;
-            System.out.println("Timer paused at: " + pausedAt);
-            updateText();
-        }
-    }
-
-    // New method to resume the timer
-    public void resume() {
-        if (!isRunning && pausedAt > 0) {
-            // Calculate how long the timer was paused
-            long pauseDuration = PeriodicLoop.elapsedTime() - pausedAt;
-            // Adjust the end time by adding the pause duration
-            endGameTime += pauseDuration;
+        synchronized(timerLock) {
+            startGameTime = PeriodicLoop.elapsedTime();
+            endGameTime = startGameTime + gameDuration;
+            timeRemaining = gameDuration;
             isRunning = true;
             pausedAt = 0;
-            System.out.println("Timer resumed, end time adjusted by: " + pauseDuration + "ms");
+            
+            // Update the display
             updateText();
+            
+            System.out.println("Timer started: " + isRunning + ", duration: " + gameDuration + "ms");
         }
     }
 
-    // New method to completely reset the timer
+    // Pause the timer
+    public void pause() {
+        synchronized(timerLock) {
+            if (isRunning) {
+                pausedAt = PeriodicLoop.elapsedTime();
+                isRunning = false;
+                System.out.println("Timer paused at: " + pausedAt);
+                updateText();
+            }
+        }
+    }
+
+    // Resume the timer
+    public void resume() {
+        synchronized(timerLock) {
+            if (!isRunning && pausedAt > 0) {
+                // Calculate how long the timer was paused
+                long pauseDuration = PeriodicLoop.elapsedTime() - pausedAt;
+                // Adjust the end time by adding the pause duration
+                endGameTime += pauseDuration;
+                isRunning = true;
+                pausedAt = 0;
+                System.out.println("Timer resumed, end time adjusted by: " + pauseDuration + "ms");
+                updateText();
+            }
+        }
+    }
+
+    // Completely reset the timer
     public void reset() {
-        isRunning = false;
-        pausedAt = 0;
-        timeRemaining = gameDuration;
-        startGameTime = PeriodicLoop.elapsedTime();
-        endGameTime = startGameTime + gameDuration;
-        System.out.println("Timer reset, timeRemaining: " + timeRemaining + "ms");
-        updateText();
+        synchronized(timerLock) {
+            isRunning = false;
+            pausedAt = 0;
+            timeRemaining = gameDuration;
+            startGameTime = PeriodicLoop.elapsedTime();
+            endGameTime = startGameTime + gameDuration;
+            System.out.println("Timer reset, timeRemaining: " + timeRemaining + "ms");
+            updateText();
+        }
     }
 
     public void refresh() {
-        if (!isRunning) {
-            // If not running, don't update the time but still update display
-            updateText();
-            return;
-        }
+        synchronized(timerLock) {
+            if (!isRunning) {
+                // If not running, don't update the time but still update display
+                updateText();
+                return;
+            }
 
-        GameCanvas canvas = Game.UI().canvas();
-        Text t1 = (Text) canvas.getShape(this.getGuid());
-        
-        if (t1 == null) {
-            return;
-        }
+            GameCanvas canvas = Game.UI().canvas();
+            Text timerText = (Text) canvas.getShape(this.getGuid());
+            
+            if (timerText == null) {
+                return;
+            }
 
-        long currentTime = PeriodicLoop.elapsedTime();
-        if (currentTime < endGameTime) {
-            timeRemaining = endGameTime - currentTime;
-        } else {
-            timeRemaining = 0;
-            t1.setColor(Color.RED);
-            // Auto-stop the timer when it reaches 0
-            isRunning = false;
-        }
+            long currentTime = PeriodicLoop.elapsedTime();
+            if (currentTime < endGameTime) {
+                timeRemaining = endGameTime - currentTime;
+            } else {
+                timeRemaining = 0;
+                timerText.setColor(Color.RED);
+                // Auto-stop the timer when it reaches 0
+                isRunning = false;
+            }
 
-        t1.setText(this.toString());
+            timerText.setText(this.toString());
+        }
     }
 
     public void updateText() {
-        GameCanvas canvas = Game.UI().canvas();
-        Text t1 = (Text) canvas.getShape(this.getGuid());
-        if (t1 != null) {
-            t1.setText(this.toString());
-            canvas.repaint();
+        try {
+            GameCanvas canvas = Game.UI().canvas();
+            if (canvas == null) return;
+            
+            Text timerText = (Text) canvas.getShape(this.getGuid());
+            if (timerText != null) {
+                timerText.setText(this.toString());
+                canvas.repaint();
+            }
+        } catch (Exception e) {
+            System.err.println("Error updating timer text: " + e.getMessage());
         }
     }
 
@@ -150,21 +171,29 @@ public class Timer {
     }
 
     public long getGameDuration() {
-        return gameDuration;
+        synchronized(timerLock) {
+            return gameDuration;
+        }
     }
 
     public void setGameDuration(long gameDuration) {
-        this.gameDuration = gameDuration;
-        this.setTimeRemaining(gameDuration);
+        synchronized(timerLock) {
+            this.gameDuration = gameDuration;
+            this.setTimeRemaining(gameDuration);
+        }
     }
 
     public long getTimeRemaining() {
-        return timeRemaining;
+        synchronized(timerLock) {
+            return timeRemaining;
+        }
     }
 
     public void setTimeRemaining(long timeRemaining) {
-        this.timeRemaining = timeRemaining;
-        this.updateText();
+        synchronized(timerLock) {
+            this.timeRemaining = timeRemaining;
+            this.updateText();
+        }
     }
 
     public String getGuid() {
@@ -172,7 +201,9 @@ public class Timer {
     }
     
     public boolean isRunning() {
-        return isRunning;
+        synchronized(timerLock) {
+            return isRunning;
+        }
     }
 
     @Override

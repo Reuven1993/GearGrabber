@@ -1,7 +1,11 @@
-
 package my_game;
+
 import base.AudioPlayer;
 import base.Game;
+import my_ui_elements.PauseGameButton;
+import my_ui_elements.HighScoreButton;
+import ui_elements.GameButton;
+
 public class GameControl {
 
     public enum Difficulty {
@@ -32,39 +36,56 @@ public class GameControl {
         }
     }
 
-    Difficulty difficulty;
-    Board board = new Board();
+    private Difficulty difficulty;
+    private Board board;
+    private ScoreBoard scoreBoard;
+    private Player player;
 
-    boolean isGameStarted = false;
-    boolean isGamePaused = false;
-    boolean isGameOver = false;
-    boolean isGameWon = false;
+    // Game state variables - using volatile for thread safety
+    private volatile boolean isGameStarted = false;
+    private volatile boolean isGamePaused = false;
+    private volatile boolean isGameOver = false;
+    private volatile boolean isGameWon = false;
 
+    public synchronized boolean isGamePaused() {
+        return isGamePaused;
+    }
 
+    public synchronized boolean isGameOver() {
+        return isGameOver;
+    }
 
-public boolean isPaused() {
-    return isGamePaused;
-}
+    public synchronized boolean isGameStarted() {
+        return isGameStarted;
+    }
 
-public boolean isGameOver() {
-    return isGameOver;
-}
+    public synchronized boolean isGameWon() {
+        return isGameWon;
+    }
 
-public boolean isGameStarted() {
-    return isGameStarted;
-}
+    public synchronized boolean isGameRunning() {
+        return isGameStarted && !isGamePaused && !isGameOver;
+    }
 
-public void resetGame() {
-    isGameStarted = false;
-    isGamePaused = false;
-    isGameOver = false;
-    isGameWon = false;
-    board.getStatusLine().displayStartText();
-}
+    public synchronized void resetGame() {
+        isGameStarted = false;
+        isGamePaused = false;
+        isGameOver = false;
+        isGameWon = false;
+        board.getStatusLine().displayStartText();
+        
+        // Hide high scores if they're displayed
+        hideHighScores();
+        
+        // Update button states
+        updateUIElements();
+    }
 
     public GameControl() {
         difficulty = Difficulty.MEDIUM;
         this.board = new Board(difficulty.getNumObstacles(), difficulty.getNumGears(), difficulty.getGameDuration());
+        this.scoreBoard = new ScoreBoard();
+        this.player = new Player("Player1");
     }
 
     public GameControl(Board board) {
@@ -75,11 +96,12 @@ public void resetGame() {
         this.player = new Player("Player1");
     }
 
-    public void startGame() {
+    public synchronized void startGame() {
         if (isGameOver) {
             // If game was over, we need to do a full restart
             restartGame();
             isGameStarted = true;
+            updateUIElements();
             return;
         }
         
@@ -97,28 +119,38 @@ public void resetGame() {
             this.board.getTimer().resume(); // Resume rather than start
             System.out.println("Game resumed");
         }
+        
+        // Hide high scores if they're displayed
+        hideHighScores();
+        
+        // Update button states
+        updateUIElements();
     }
 
-    public void pauseGame() {
+    public synchronized void pauseGame() {
         // Can only pause a game that's started and not already over
         if (isGameStarted && !isGameOver) {
-            if (!isGamePaused) {
+            // Toggle pause state
+            isGamePaused = !isGamePaused;
+            
+            if (isGamePaused) {
                 // Pause the game
-                isGamePaused = true;
                 this.board.getStatusLine().displayPauseText();
                 this.board.getTimer().pause();
                 System.out.println("Game paused");
             } else {
                 // Resume the game
-                isGamePaused = false;
                 this.board.getStatusLine().displayGamePlayingText();
                 this.board.getTimer().resume();
                 System.out.println("Game resumed");
             }
+            
+            // Update button states
+            updateUIElements();
         }
     }
 
-    public void restartGame() {
+    public synchronized void restartGame() {
         // Stop any playing sounds
         if (Game.audioPlayer().getStatus() == base.AudioPlayer.MusicStatus.PLAYING) {
             Game.audioPlayer().stop();
@@ -139,6 +171,12 @@ public void resetGame() {
         // Update status line
         this.board.getStatusLine().displayStartText();
         
+        // Hide high scores if they're displayed
+        hideHighScores();
+        
+        // Update button states
+        updateUIElements();
+        
         // Refresh the canvas
         Game.UI().canvas().repaint();
         
@@ -146,16 +184,15 @@ public void resetGame() {
     }
     
     public void gameStep() {
-
         updateGameStatus();
-            if (isGameStarted && !isGamePaused && !isGameOver) {
+        if (isGameStarted && !isGamePaused && !isGameOver) {
             // Only refresh the timer if the game is actually running
             this.board.getTimer().refresh();
             Game.UI().canvas().repaint();
         }
     }
 
-    public void updateGameStatus() {
+    private synchronized void updateGameStatus() {
         if (isGameStarted && !isGamePaused && !isGameOver) {
             if (this.board.checkAllGearsAtHome()) {
                 playerWon();
@@ -165,7 +202,7 @@ public void resetGame() {
         }
     }
 
-    public void playerWon() {
+    private synchronized void playerWon() {
         isGameOver = true;
         isGameWon = true;
         this.board.getStatusLine().displayPlayerWonText();
@@ -175,11 +212,12 @@ public void resetGame() {
 
         // Play win sound
         Game.audioPlayer().play("resources/audio/Applause.wav.wav", 1);
-
-
+        
+        // Update button states
+        updateUIElements();
     }
 
-    public void playerLost() {
+    private synchronized void playerLost() {
         isGameOver = true;
         this.board.getStatusLine().displayGameOverText();
         
@@ -190,6 +228,9 @@ public void resetGame() {
         
         // Play the losing sound effect
         Game.audioPlayer().play("resources/audio/loosing_sound.wav.wav", 1);
+        
+        // Update button states
+        updateUIElements();
     }
 
     public void setDifficulty(Difficulty difficulty) {
@@ -219,7 +260,6 @@ public void resetGame() {
         if (isGameStarted && !isGamePaused && !isGameOver) {
             board.getRobot().drill();
         }
-
     }
 
     public void orderRobotPickup() {
@@ -251,38 +291,20 @@ public void resetGame() {
     }
 
     /**
-     * Checks if the game is currently paused
-     * @return true if game is paused, false otherwise
+     * Called when the robot successfully picks up a gear.
+     * Updates the player's gear collection count.
      */
-    public boolean isGamePaused() {
-        return isGamePaused;
+    public void notifyGearCollected() {
+        if (player != null) {
+            player.incrementGearsCollected();
+        }
     }
-
-    /**
-     * Checks if the game is currently running
-     * @return true if game is running, false otherwise
-     */
-    public boolean isGameRunning() {
-        return isGameStarted && !isGamePaused && !isGameOver;
-    }
-
-/**
- * Called when the robot successfully picks up a gear.
- * Updates the player's gear collection count.
- */
-public void notifyGearCollected() {
-    if (player != null) {
-        player.incrementGearsCollected();
-    }
-}
-    public Player player;
-    public ScoreBoard scoreBoard;
-
+    
     public void setPlayerName(String name) {
         this.player = new Player(name);
     }
     
-    public void calculateFinalScore() {
+    private void calculateFinalScore() {
         if (!isGameOver) return;
         
         long timeRemaining = board.getTimer().getTimeRemaining() / 1000;
@@ -313,6 +335,38 @@ public void notifyGearCollected() {
             board.getTimer().getTimeRemaining()
         );
     }
-
     
+    /**
+     * Hide high scores if they're displayed
+     */
+    private void hideHighScores() {
+        try {
+            // Find and hide high scores
+            HighScoreButton highScoreButton = (HighScoreButton) Game.UI().dashboard().getUIElement("highScoreButton");
+            if (highScoreButton != null) {
+                highScoreButton.clearHighScores();
+            }
+        } catch (Exception e) {
+            System.err.println("Error hiding high scores: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Update all UI elements to reflect current game state
+     */
+    private void updateUIElements() {
+        try {
+            // Update pause button text
+            PauseGameButton pauseButton = (PauseGameButton) Game.UI().dashboard().getUIElement("pauseButton");
+            if (pauseButton != null) {
+                pauseButton.updateButtonText();
+            }
+            
+            // Refresh dashboard
+            Game.UI().dashboard().updateUI();
+        } catch (Exception e) {
+            System.err.println("Error updating UI elements: " + e.getMessage());
+        }
+    }
 }
+
