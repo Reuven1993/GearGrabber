@@ -16,6 +16,9 @@ import my_ui_elements.DifficultyCombo;
 import my_ui_elements.AesteticObstacleCB;
 import my_ui_elements.CustomEndButton;
 import my_ui_elements.HighScoreButton;
+import my_ui_elements.DrillButton;
+import my_ui_elements.PickupButton;
+import my_ui_elements.DropButton;
 
 public class MyGame extends Game {
 
@@ -44,7 +47,7 @@ public class MyGame extends Game {
 		DifficultyCombo difficultyCombo = new DifficultyCombo(150, 20);
 		dashboard.addUIElement(difficultyCombo);
 
-		AesteticObstacleCB aestheticObstacleCB = new AesteticObstacleCB("aestheticObstacleCB", "Aesthetic Obstacles", 150, 60, 160, 30, true);
+		AesteticObstacleCB aestheticObstacleCB = new AesteticObstacleCB("aestheticObstacleCB", "Aesthetic Obstacles", 150, 60, 200, 30, true);
 		dashboard.addUIElement(aestheticObstacleCB);
 
 		dashboard.addUIElement(new StartGameButton("startButton", "Start", 0, 0, difficultyCombo, aestheticObstacleCB));
@@ -55,8 +58,13 @@ public class MyGame extends Game {
 		dashboard.addUIElement(new CustomEndButton("btnEND", "EXIT", 100, 40, 850, 40));
 
 		dashboard.addUIElement(new MusicButton("musicButton", "Play", 700, 40));
-		dashboard.addUIElement(new HighScoreButton("highScoreButton", "High Scores", 500, 40));
+		dashboard.addUIElement(new HighScoreButton("highScoreButton", "High Scores", 525, 40));
+	
+		dashboard.addUIElement(new DrillButton("drillButton", "Drill", 375, 0));
+		dashboard.addUIElement(new PickupButton("pickupButton", "Pickup", 375, 50));
+		dashboard.addUIElement(new DropButton("dropButton", "Drop", 375, 100));
 	}
+
 
 	@Override
 	public void setGameContent(GameContent content) {

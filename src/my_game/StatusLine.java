@@ -11,13 +11,13 @@ public class StatusLine {
 
     private ScreenPoint location = new ScreenPoint(200, 200);
     private final String guid = "statusLine";
-    private String startText = "Welcome GearGrabber! \n Press Start to begin!";
+    private String startText = "Welcome GearGrabber! \nPress Start to begin!";
     private String gamePlayingText = "";
     private String playerWonText = "Congratulations! You won!";
-    private String gameOverText = "Game Over! \n Press Restart to play again!";
-    private String pauseText = "Game Paused! \n Press Start to resume!";
+    private String gameOverText = "Game Over! \nPress Restart to play again!";
+    private String pauseText = "Game Paused! \nPress Start to resume!";
 
-    private Color color = Color.BLACK;
+    private Color color = Color.GREEN;
     private int fontSize = 30;
 
     public StatusLine() {
