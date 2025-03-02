@@ -17,7 +17,7 @@ public class HighScoreButton extends GameButton {
     private static final String SCORE_ROW_PREFIX = "scoreRow";
     
     public HighScoreButton(String id, String name, int posX, int posY) {
-        super(id, name, 120, 40, posX, posY);
+        super(id, name, 150, 40, posX, posY);
         scoreBoard = new ScoreBoard();
         this.button.setBackground(new Color(0, 102, 204));
         this.button.setForeground(Color.WHITE);

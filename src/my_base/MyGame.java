@@ -55,7 +55,7 @@ public class MyGame extends Game {
 		dashboard.addUIElement(new CustomEndButton("btnEND", "EXIT", 100, 40, 850, 40));
 
 		dashboard.addUIElement(new MusicButton("musicButton", "Play", 700, 40));
-		dashboard.addUIElement(new HighScoreButton("highScoreButton", "High Scores", 600, 40));
+		dashboard.addUIElement(new HighScoreButton("highScoreButton", "High Scores", 500, 40));
 	}
 
 	@Override
