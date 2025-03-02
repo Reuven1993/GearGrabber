@@ -16,8 +16,8 @@ public class Obstacle implements Intersectable {
     // private ScreenPoint[] points;
 
     private boolean aestheticObstacle = true;
-    private final String imageID;
-    private final String imageObstacle = "resources/mediumBlockWall.png";
+    // private final String imageID;
+    // private final String imageObstacle = "resources/mediumBlockWall.png";
     private final int imageWidth = 100;
     private final int imageHeight = 100;
 
@@ -25,7 +25,7 @@ public class Obstacle implements Intersectable {
     public Obstacle() {
 
         this.polyID = "Obstacle";
-        this.imageID = "ObstacleImage";
+        // this.imageID = "ObstacleImage";
         this.setLocation(new ScreenPoint(200, 150));
         initObstacle();
 
@@ -34,7 +34,7 @@ public class Obstacle implements Intersectable {
     public Obstacle(ScreenPoint location) {
 
         this.polyID = "Obstacle";
-        this.imageID = "ObstacleImage";
+        // this.imageID = "ObstacleImage";
         this.setLocation(location);
         initObstacle();
 
@@ -43,7 +43,7 @@ public class Obstacle implements Intersectable {
     public Obstacle(String polyID) {
 
         this.polyID = polyID;
-        this.imageID = polyID + "Image";
+        // this.imageID = polyID + "Image";
         this.setLocation(new ScreenPoint(200, 150));
         initObstacle();
 
@@ -52,7 +52,7 @@ public class Obstacle implements Intersectable {
     public Obstacle(String polyID, ScreenPoint location) {
 
         this.polyID = polyID;
-        this.imageID = polyID + "Image";
+        // this.imageID = polyID + "Image";
         this.setLocation(location);
         initObstacle();
 
@@ -61,7 +61,7 @@ public class Obstacle implements Intersectable {
     public Obstacle(String polyID, ScreenPoint location , boolean aestheticObstacle) {
 
         this.polyID = polyID;
-        this.imageID = polyID + "Image";
+        // this.imageID = polyID + "Image";
         this.aestheticObstacle = aestheticObstacle;
         this.setLocation(location);
         initObstacle();
@@ -71,7 +71,7 @@ public class Obstacle implements Intersectable {
     public Obstacle(String polyID , boolean aestheticObstacle) {
 
         this.polyID = polyID;
-        this.imageID = polyID + "Image";
+        // this.imageID = polyID + "Image";
         this.aestheticObstacle = aestheticObstacle;
         this.setLocation(new ScreenPoint(200, 150));
         initObstacle();
